@@ -1,0 +1,5 @@
+*.egg-info
+experiments/generate_exemplars/parses/*
+experiments/generate_exemplars/targets/*
+__pycache__/*
+*.pyc
