@@ -3,3 +3,8 @@ experiments/generate_exemplars/parses/*
 experiments/generate_exemplars/targets/*
 __pycache__/*
 *.pyc
+*.png
+*.pt
+class_labels.txt
+*.DS_Store
+._*

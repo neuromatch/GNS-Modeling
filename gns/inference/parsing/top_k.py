@@ -63,7 +63,8 @@ def search_parse(parse, score_fn, configs_per=100, trials_per=800):
 def get_topK_parses(img, k, score_fn, configs_per=100, trials_per=800,
                     device=None, seed=3, **grp_kwargs):
     # generate random walks (the "base parses")
-    base_parses = generate_random_parses(I=img, seed=seed, **grp_kwargs)
+    np.random.seed(seed)
+    base_parses = generate_random_parses(image=img, **grp_kwargs)
     # convert strokes to minimal splines
     base_parses = [process_parse(parse, device) for parse in base_parses]
 
