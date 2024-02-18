@@ -9,8 +9,6 @@ from gns.omniglot.classification import ClassificationDataset
 from gns.type import TypeModel
 from gns.utils.experiments import mkdir, time_string
 
-
-
 @torch.no_grad()
 def model_score_fn(model, parses):
     drawings = nested_map(lambda x: get_stk_from_bspline(x), parses)
