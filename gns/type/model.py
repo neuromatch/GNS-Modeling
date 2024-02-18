@@ -12,19 +12,20 @@ from .terminate_model import CNNTerminate
 from .location_model import CNNStart
 from .stroke_model import LSTMConditioned
 
+# Use the current working directory, which is where the Jupyter server was started
+current_script_directory = os.getcwd()
 
-
-def load_terminate_model(save_dir, downsize):
+def load_terminate_model(downsize):
     model = CNNTerminate(
         dropout=0.5,
         cnn_dropout=0.5,
         downsize=downsize
     )
-    save_file = os.path.join(save_dir, 'terminate_model.pt')
+    save_file = os.path.join(current_script_directory, 'terminate_model.pt')
     model.load_state_dict(torch.load(save_file, map_location='cpu'))
     return model
 
-def load_location_model(save_dir, downsize):
+def load_location_model(downsize):
     model = CNNStart(
         k=20,
         dropout=0.5,
@@ -33,11 +34,11 @@ def load_location_model(save_dir, downsize):
         alpha=0.,
         downsize=downsize
     )
-    save_file = os.path.join(save_dir, 'location_model.pt')
+    save_file = os.path.join(current_script_directory, 'location_model.pt')
     model.load_state_dict(torch.load(save_file, map_location='cpu'))
     return model
 
-def load_stroke_model(save_dir, downsize):
+def load_stroke_model(downsize):
     model = LSTMConditioned(
         k=20,
         d=2,
@@ -51,22 +52,19 @@ def load_stroke_model(save_dir, downsize):
         start_dropout=0.,
         downsize=downsize
     )
-    save_file = os.path.join(save_dir, 'stroke_model.pt')
+    save_file = os.path.join(current_script_directory, 'stroke_model.pt')
     model.load_state_dict(torch.load(save_file, map_location='cpu'))
     return model
 
+# Modify the __init__ function of TypeModel to remove the save_dir parameter
 class TypeModel(nn.Module):
-    def __init__(self, save_dir=None, downsize=True):
+    def __init__(self, downsize=True):
         super().__init__()
 
-        if save_dir is None:
-            save_dir = MODEL_SAVE_PATH
-        assert os.path.exists(save_dir)
-
-        self.loc = load_location_model(save_dir, downsize).requires_grad_(False)
-        self.stk = load_stroke_model(save_dir, downsize).requires_grad_(False)
-        self.term = load_terminate_model(save_dir, downsize).requires_grad_(False)
-
+        # Use the current script's directory to load models
+        self.loc = load_location_model(downsize).requires_grad_(False)
+        self.stk = load_stroke_model(downsize).requires_grad_(False)
+        self.term = load_terminate_model(downsize).requires_grad_(False)
         self.renderer = Renderer(blur_sigma=0.5)
 
         self.register_buffer('space_mean', torch.tensor([50., -50.]))
